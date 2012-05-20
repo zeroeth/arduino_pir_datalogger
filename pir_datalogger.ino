@@ -52,7 +52,7 @@ void loop() {
 
   int current_pir_value = digitalRead(pirPin);
 
-  if(digitalRead(pirPin) == HIGH) {
+  if(current_pir_value == HIGH) {
     digitalWrite(greenLEDpin, HIGH);
   }
   else {
@@ -61,7 +61,7 @@ void loop() {
 
   if(current_pir_value != last_pir_value) {
 
-    if(digitalRead(pirPin) == HIGH) {
+    if(current_pir_value == HIGH) {
       Serial.println("HIGH");
 
       logfile = SD.open(filename, FILE_WRITE);
