@@ -12,9 +12,10 @@ RTC_DS1307 RTC;
 File logfile;
 char filename[] = "LOGGER00.CSV";
 int last_pir_value = LOW;
+int current_pir_value;
+DateTime now;
 
 void setup() {
-  Serial.begin(9600);
 
   pinMode(pirPin, INPUT);
   digitalWrite(pirPin, LOW);
@@ -22,67 +23,64 @@ void setup() {
   delay(1000);
 
   pinMode(greenLEDpin, OUTPUT);
-  //pinMode(redLEDpin, OUTPUT);
+  pinMode(  redLEDpin, OUTPUT);
+
+  digitalWrite(greenLEDpin, LOW);
+  digitalWrite(  redLEDpin, LOW);
 
   pinMode(chipSelect, OUTPUT);
 
   SD.begin(chipSelect);
 
   logfile = SD.open(filename, FILE_WRITE);
-  if (!logfile) {
-    Serial.print("LOG failed");
+  if(!logfile) {
+    error_alert();
   }
 
   Wire.begin();
   if (!RTC.begin()) {
+    error_alert();
     logfile.println("RTC failed");
-    Serial.print("RTC failed");
   }
 
   //RTC.adjust(DateTime(__DATE__, __TIME__));
 
-
   logfile.close();
+
+  go_to_sleep();
 }
 
 void loop() {
-
-  DateTime now;
-  now = RTC.now();
-
-  int current_pir_value = digitalRead(pirPin);
-
-  if(current_pir_value == HIGH) {
-    digitalWrite(greenLEDpin, HIGH);
-  }
-  else {
-    digitalWrite(greenLEDpin, LOW);
-  }
+  current_pir_value = digitalRead(pirPin);
 
   if(current_pir_value != last_pir_value) {
 
-    if(current_pir_value == HIGH) {
-      Serial.println("HIGH");
+    now = RTC.now();
 
-      logfile = SD.open(filename, FILE_WRITE);
+    logfile = SD.open(filename, FILE_WRITE);
+
+    if(current_pir_value == HIGH) {
+      digitalWrite(greenLEDpin, HIGH);
 
       logfile.print("HIGH ");
-      logfile.print(now.unixtime());
-      logfile.println("");
-
-      logfile.close();
     }
     else {
-      Serial.print("LOW");
-
-      logfile = SD.open(filename, FILE_WRITE);
+      digitalWrite(greenLEDpin, LOW);
 
       logfile.print("LOW ");
-      logfile.print(now.unixtime());
-      logfile.println("");
-
-      logfile.close();
     }
+
+    logfile.print(now.unixtime());
+    logfile.println("");
+    logfile.close();
   }
+
   last_pir_value = current_pir_value;
+}
+
+void error_alert() {
+  digitalWrite(redLEDpin, HIGH);
+}
+
+void go_to_sleep() {
 }
