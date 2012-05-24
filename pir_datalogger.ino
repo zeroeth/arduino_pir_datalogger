@@ -1,11 +1,15 @@
 #include "SD.h"
 #include <Wire.h>
 #include "RTClib.h"
+#include <avr/interrupt.h>
+#include <avr/power.h>
+#include <avr/sleep.h>
 
 #define redLEDpin 5
 #define greenLEDpin 4
 
 #define pirPin 3
+#define interruptNumber 1 //for pin 3
 #define chipSelect 10
 
 RTC_DS1307 RTC;
@@ -14,7 +18,7 @@ char filename[] = "LOGGER00.CSV";
 int last_pir_value = LOW;
 int current_pir_value;
 DateTime now;
-
+bool should_sleep = false;
 void setup() {
 
   pinMode(pirPin, INPUT);
@@ -68,6 +72,8 @@ void loop() {
       digitalWrite(greenLEDpin, LOW);
 
       logfile.print("LOW ");
+
+      should_sleep = true;
     }
 
     logfile.print(now.unixtime());
@@ -76,6 +82,10 @@ void loop() {
   }
 
   last_pir_value = current_pir_value;
+
+  if(should_sleep) {
+    go_to_sleep();
+  }
 }
 
 void error_alert() {
@@ -83,4 +93,15 @@ void error_alert() {
 }
 
 void go_to_sleep() {
+  should_sleep = false;
+
+  attachInterrupt(interruptNumber, pinInterrupt, HIGH);
+
+  set_sleep_mode(SLEEP_MODE_IDLE);
+
+  sleep_enable();
+}
+
+void pinInterrupt(void) {
+  detachInterrupt(interruptNumber);
 }
