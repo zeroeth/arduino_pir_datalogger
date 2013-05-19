@@ -55,6 +55,8 @@ void setup() {
 
   sensor_started_alert();
 
+  setup_sleep();
+
   go_to_sleep();
 }
 
@@ -81,15 +83,14 @@ void initialize_rtc_clock() {
 
 
 void set_rtc_time_from_compile() {
-
-  Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for Leonardo only
-  }
-
   RTC.adjust(DateTime(__DATE__, __TIME__));
 
   /*
+    Serial.begin(9600);
+    while (!Serial) {
+      ; // wait for serial port to connect. Needed for Leonardo only
+    }
+
     Serial.println("RTC Sync:");
 
     Serial.println(__DATE__);
@@ -225,15 +226,19 @@ void sensor_started_alert() {
 
 /* INTERRUPT ROUTINE FOR PIR SENSOR *****/
 
+void setup_sleep() {
+}
+
 void go_to_sleep() {
   // FIXME this doesnt kick in till first log
   should_sleep = false;
 
   attachInterrupt(interruptNumber, pinInterrupt, HIGH);
-
   set_sleep_mode(SLEEP_MODE_IDLE);
-
   sleep_enable();
+
+  sleep_mode();
+  sleep_disable();
 }
 
 
