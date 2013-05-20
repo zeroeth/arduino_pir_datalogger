@@ -28,7 +28,7 @@ int last_pir_value = LOW;
 int current_pir_value;
 DateTime now;
 bool should_sleep = false;
-
+char logger_buffer[512] = {0};
 
 
 void setup() {
@@ -122,12 +122,12 @@ void loop() {
     if(current_pir_value == HIGH) {
       // digitalWrite(greenLEDpin, HIGH); // save power
 
-      sprintf(logger_buffer, "HIGH %d", now.unixtime());
+      sprintf(logger_buffer, "HIGH %lu", (unsigned long)now.unixtime());
     }
     else {
       // digitalWrite(greenLEDpin, LOW); // save power
 
-      sprintf(logger_buffer, "LOW %d", now.unixtime());
+      sprintf(logger_buffer, "LOW %lu", (unsigned long)now.unixtime());
 
       should_sleep = true;
     }
