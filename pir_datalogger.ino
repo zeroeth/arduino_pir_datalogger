@@ -119,23 +119,21 @@ void loop() {
 
     now = RTC.now();
 
-    logfile = SD.open(filename, FILE_WRITE);
-
     if(current_pir_value == HIGH) {
       // digitalWrite(greenLEDpin, HIGH); // save power
 
-      logfile.print("HIGH ");
+      sprintf(logger_buffer, "HIGH %d", now.unixtime());
     }
     else {
       // digitalWrite(greenLEDpin, LOW); // save power
 
-      logfile.print("LOW ");
+      sprintf(logger_buffer, "LOW %d", now.unixtime());
 
       should_sleep = true;
     }
 
-    logfile.print(now.unixtime());
-    logfile.println("");
+    logfile = SD.open(filename, FILE_WRITE);
+    logfile.println(logger_buffer);
     logfile.close();
   }
 
