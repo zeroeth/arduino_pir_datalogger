@@ -14,7 +14,6 @@
 #include <avr/power.h>
 #include <avr/sleep.h>
 
-#define redLEDpin 5 // currently unconnected
 #define greenLEDpin 4
 
 #define pirPin 3
@@ -60,10 +59,8 @@ void pin_io_modes() {
   delay(1000);
 
   pinMode(greenLEDpin, OUTPUT);
-  pinMode(  redLEDpin, OUTPUT);
 
   digitalWrite(greenLEDpin, LOW);
-  digitalWrite(  redLEDpin, LOW);
 
   pinMode(chipSelect, OUTPUT);
 }
@@ -74,7 +71,7 @@ void initialize_sd_and_open_log() {
 
   logfile = SD.open(filename, FILE_WRITE);
   if(!logfile) {
-    error_alert();
+    sdcard_error_alert();
   }
 }
 
@@ -82,7 +79,7 @@ void initialize_sd_and_open_log() {
 void initialize_rtc_clock() {
   Wire.begin();
   if (!RTC.begin()) {
-    error_alert();
+    rtc_error_alert();
   }
 }
 
@@ -153,24 +150,22 @@ void loop() {
 
 
 /* ALERTS *******************************/
-// slow with quick = SD card error
-// 100 ms blink = time set mode
-// 2 seconds of quick = ready to go
+// continuous slow with 2 quick blinks = SD card error
+// continuous 1 second with 4 quick blinks = rtc error
+// continuous 100 ms blink = time set mode
+// 2 seconds of quick blink = ready to go
 
 void time_set_alert() {
-  digitalWrite (  redLEDpin, HIGH);
   digitalWrite (greenLEDpin, HIGH);
 
   delay(500);
 
   for(;;)
   {
-    digitalWrite (  redLEDpin, LOW);
     digitalWrite (greenLEDpin, LOW);
 
     delay(100);
 
-    digitalWrite (  redLEDpin, HIGH);
     digitalWrite (greenLEDpin, HIGH);
 
     delay(100);
@@ -178,30 +173,75 @@ void time_set_alert() {
 }
 
 
-void error_alert() {
-  digitalWrite (  redLEDpin, HIGH);
+void rtc_error_alert() {
   digitalWrite (greenLEDpin, HIGH);
 
   delay(500);
 
   for(;;)
   {
-    digitalWrite (  redLEDpin, LOW);
+    digitalWrite (greenLEDpin, LOW);
+
+    delay(100);
+
+    digitalWrite (greenLEDpin, HIGH);
+
+    delay(100);
+
+    digitalWrite (greenLEDpin, LOW);
+
+    delay(100);
+
+    digitalWrite (greenLEDpin, HIGH);
+
+    delay(100);
+
+    digitalWrite (greenLEDpin, LOW);
+
+    delay(100);
+
+    digitalWrite (greenLEDpin, HIGH);
+
+    delay(100);
+
+    digitalWrite (greenLEDpin, LOW);
+
+    delay(100);
+
+    digitalWrite (greenLEDpin, HIGH);
+
+    delay(100);
+
+    digitalWrite (greenLEDpin, LOW);
+
+    delay(1000);
+
+    digitalWrite (greenLEDpin, HIGH);
+
+    delay(1000);
+  }
+}
+
+
+void sdcard_error_alert() {
+  digitalWrite (greenLEDpin, HIGH);
+
+  delay(500);
+
+  for(;;)
+  {
     digitalWrite (greenLEDpin, LOW);
 
     delay(50);
 
-    digitalWrite (  redLEDpin, HIGH);
     digitalWrite (greenLEDpin, HIGH);
 
     delay(50);
 
-    digitalWrite (  redLEDpin, LOW);
     digitalWrite (greenLEDpin, LOW);
 
     delay(2000);
 
-    digitalWrite (  redLEDpin, HIGH);
     digitalWrite (greenLEDpin, HIGH);
 
     delay(2000);
@@ -212,12 +252,10 @@ void error_alert() {
 void sensor_started_alert() {
   for (int alert_count = 0; alert_count < 10; alert_count++)
   {
-    digitalWrite (  redLEDpin, HIGH);
     digitalWrite (greenLEDpin, HIGH);
 
     delay(50);
 
-    digitalWrite (  redLEDpin, LOW);
     digitalWrite (greenLEDpin, LOW);
 
     delay(50);
