@@ -33,18 +33,7 @@ char logger_buffer[512] = {0};
 
 void setup() {
 
-  pinMode(pirPin, INPUT);
-  digitalWrite(pirPin, LOW);
-
-  delay(1000);
-
-  pinMode(greenLEDpin, OUTPUT);
-  pinMode(  redLEDpin, OUTPUT);
-
-  digitalWrite(greenLEDpin, LOW);
-  digitalWrite(  redLEDpin, LOW);
-
-  pinMode(chipSelect, OUTPUT);
+  pin_io_modes();
 
   initialize_sd_and_open_log();
 
@@ -63,6 +52,22 @@ void setup() {
 
 
 /* SETUP ********************************/
+
+void pin_io_modes() {
+  pinMode(pirPin, INPUT);
+  digitalWrite(pirPin, LOW);
+
+  delay(1000);
+
+  pinMode(greenLEDpin, OUTPUT);
+  pinMode(  redLEDpin, OUTPUT);
+
+  digitalWrite(greenLEDpin, LOW);
+  digitalWrite(  redLEDpin, LOW);
+
+  pinMode(chipSelect, OUTPUT);
+}
+
 
 void initialize_sd_and_open_log() {
   SD.begin(chipSelect);
