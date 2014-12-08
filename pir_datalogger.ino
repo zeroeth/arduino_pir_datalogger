@@ -5,6 +5,8 @@
      - uncomment `set_rtc_time_from_compile();`
      - upload and boot once until you see a steady flash on the green led
      - avoid resetting until you re-comment out the code as it will set the clock to the time you compiled.
+
+	By Kevin Alford. github.com/zeroeth
 */
 
 #include "SD.h"
